@@ -1,4 +1,4 @@
-# 🔄 Unified Shell (Terminal)
+# 🔄 Unified Shell (Polyglot Terminal)
 Execute Windows DOS, PowerShell, and Linxu (bash) commands in one place. Designed for Windows environment.
 
 > **Stop fighting your muscle memory.** Use the commands you know, on the operating system you have.
