@@ -1,0 +1,60 @@
+Work In Progress / Improvement Notes:
+
+This is a "Bash/PowerShell/CMD polyglot shell" that tries to make Windows feel like Linux (or WSL) while still leveraging native Windows tools.
+
+What’s Awesome: 
+A unified shell with smart translation, mode switching, and prefix overrides (c: dir, p: Get-Process, w: ls) is genuinely useful.
+
+Smart auto-detection of PowerShell cmdlets.
+
+The regex ^[a-zA-Z]+-[a-zA-Z]+ to route verb-noun commands to PowerShell is good.
+
+Recursive translation handling.
+
+Prefix override system (c:, p:, w:).
+
+Super clean way to force execution context.
+
+Colorized prompt with mode indicator.
+
+Ignores sudo gracefully.
+
+.
+
+Areas That Could Be An Issue:
+
+Issue: subprocess.run(..., shell=True) with user input Why It Matters: Critical security flaw if this ever runs with elevated rights or processes untrusted input (command injection heaven) Suggested Fix: Use shell=False and pass command + args as a list wherever possible.
+
+Only use shell=True when absolutely necessary.
+
+Issue: os.system('') hack for ANSI on Windows Why It Matters: Works, but outdated since Python 3.6+ Suggested Fix: Use os.system("") only on old Windows, or better: import ctypes; ctypes.windll.kernel32.SetConsoleMode(...) or just rely on Windows 10+ built-in ANSI support.
+
+Issue: Flag translation is very naive (ls -laR → dir /a /s) Why It Matters: Breaks on many real-world cases (ls -l --color, grep -r "foo" .) Suggested Fix: Either drop complex flag mapping entirely (just map ls → dir and let user learn), or implement a proper flag translator per-command (big effort).
+
+Current implementation is a half-measure.
+
+Issue: touch → type nul >> file fails if file exists Why It Matters: Should be copy nul file or '' > file Suggested Fix: Better: with open(file, 'a'): pass or just copy nul newfile >nul 2>&1.
+
+Issue: No piping or redirection support in translations Why It Matters: ls | grep txt becomes dir Suggested Fix: Needs implementation.
+
+Issue: kill → taskkill /F /PID assumes PID is always given Why It Matters: kill 1234 works, but kill %1 or signal names don’t Suggested Fix: At minimum document it only accepts PIDs.
+
+Issue: No tab completion Adding basic filename completion via readline would be a big improvement.
+
+Nice-to-Have Future Ideas:
+
+Add bat as polyfill for cat with syntax highlighting (via subprocess call).
+
+Add eza/lsd/exa → call actual modern replacements if installed.
+
+Add zoxide/autojump integration for smarter cd.
+
+Make it a proper package with pip install unified-shell and entry point.
+
+Add a config file (~/.unifiedrc) for custom aliases/translations.
+
+Optional: integrate rich or prompt_toolkit for a beautiful prompt/history/search.
+
+Overall, this is about 80% of the way to being a killer tool.
+
+It could use a few security/stability fixes and some polish.
